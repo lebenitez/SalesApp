@@ -2,6 +2,8 @@ import streamlit as st
 from pathlib import Path
 import pandas as pd
 
+COMISSAO = 0.08    
+
 def leitura_dados():
     if not 'dados' in st.session_state:
         pasta_datasets = Path(__file__).parent / 'datasets'
