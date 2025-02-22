@@ -31,8 +31,21 @@ def mostra_tabela_vendas():
                                           list(df_vendas.columns),
                                           list(df_vendas.columns)
                                           )
-    st.dataframe(df_vendas[colunas_selecionadas])
+    col1, col2 = st.sidebar.columns(2)
+    filtro_selecionado = col1.selectbox('Selecione o filtro:', 
+                     list(df_vendas.columns))
+    valores_unicos_coluna = list(df_vendas[filtro_selecionado].unique())
+    valor_filtro = col2.selectbox('Selecione o valor:',
+                                  valores_unicos_coluna)
+    filtrar = col1.button('Filtrar')
+    limpar = col2.button('Limpar')
 
+    if filtrar:
+        st.dataframe(df_vendas.loc[df_vendas[filtro_selecionado] == valor_filtro, colunas_selecionadas], height=800, width=1000)
+    elif limpar:
+        st.dataframe(df_vendas[colunas_selecionadas], height=800, width=1000)
+    else:
+        st.dataframe(df_vendas[colunas_selecionadas], height=800, width=1000)
 
 
 if tabela_selecionada == 'Produtos':

@@ -2,6 +2,7 @@ import streamlit as st
 from pathlib import Path
 import pandas as pd
 from utilidades import leitura_dados
+from datetime import datetime
 
 leitura_dados()
 
@@ -10,7 +11,6 @@ df_filiais = st.session_state['dados']['filiais']
 df_produtos = st.session_state['dados']['produtos']
 df_filiais['cidade/estado'] = df_filiais['cidade'] + '/' + df_filiais['estado']
 cidades_filiais = df_filiais['cidade/estado'].tolist()
-
 
 st.sidebar.markdown('## Adição de Vendas')
 filial_selecionada = st.sidebar.selectbox('Selecione a cidade da filial:', cidades_filiais)
@@ -24,11 +24,30 @@ genero_cliente = st.sidebar.selectbox('Gênero do cliente:', ['Masculino', 'Femi
 forma_pagamento = st.sidebar.selectbox('Forma de pagamento:', ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix', 'Boleto'])
 adicionar_venda = st.sidebar.button('Adicionar Venda')
 if adicionar_venda:
-    
+    lista_adicionar = [df_vendas['id_venda'].max() + 1,
+                       filial_selecionada.split('/')[0],
+                       vendedor_selecionado,
+                       produto_selecionado,
+                       nome_cliente,
+                       genero_cliente,
+                       forma_pagamento
+                       ]
+    hora_adicionar = datetime.now()
+    df_vendas.loc[hora_adicionar] = lista_adicionar
+    caminho_dataset = st.session_state['caminho_datasets']
+    df_vendas.to_csv(caminho_dataset / 'vendas.csv', decimal=',', sep=';')
+    st.dataframe(df_vendas)
 
-st.dataframe(df_vendas)
-st.dataframe(df_filiais)
-st.dataframe(df_produtos)
+st.sidebar.markdown('## Remoção de Vendas')
+id_remocao = st.sidebar.number_input('ID da venda a ser removida:', min_value=0, max_value=df_vendas['id_venda'].max())
+remover_venda = st.sidebar.button('Remover Venda')
+if remover_venda:
+    df_vendas = df_vendas[df_vendas['id_venda'] != id_remocao]
+    caminho_dataset = st.session_state['caminho_datasets']
+    df_vendas.to_csv(caminho_dataset / 'vendas.csv', decimal=',', sep=';')
+    st.session_state['dados']['df_vendas'] = df_vendas
+    
+st.dataframe(df_vendas, height=800)
 
 
 # Sidebar

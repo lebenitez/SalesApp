@@ -11,4 +11,5 @@ def leitura_dados():
         dados = {'vendas': df_vendas, 
                 'filiais': df_filiais, 
                 'produtos': df_produtos}
+        st.session_state['caminho_datasets'] = pasta_datasets
         st.session_state['dados'] = dados
